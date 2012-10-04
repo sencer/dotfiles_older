@@ -1,0 +1,117 @@
+#!/bin/sh
+#  * Fri May 14 2004 Josko Plazonic <plazonic@math.princeton.edu>
+#  - added a timeout to ldapsearch, turns out that for some reason
+#  the search hangs on certain words (like aric); will check with
+#  OIT why but in meantime this helps
+# 
+#  * Mon Apr 26 2004 Josko Plazonic <plazonic@math.princeton.edu>
+#  - added sorting, turned on by default and using pudisplayname
+#  as that attribute is lastname, firstname so we get a good sort
+#  first by last name, then by first name
+#
+#  * Mon Jun 04 2001 Josko Plazonic <plazonic@math.princeton.edu>
+#  - incorporated sed script within the file rather than use
+#  sed -f external script
+#  - made sure it also prints delimiters at top and bottom
+#  - made it possible to detect when no matches are found and output
+#  accordingly
+#
+#  * Thu Mar 01 2001 Josko Plazonic <plazonic@math.princeton.edu>
+#  - wrote the sample ph replacement using ldapsearch and sed for 
+#  Mathematics dept. 
+#
+#
+
+# The following variable contains msg to display if nothing is 
+# found, care should be taken not to use certain chars, like "\"
+NOTFOUNDMSG="No matches for your ph query."
+# Used at top, bottom and between records
+DELIMITER="--------------------------------------------------------"
+
+if [ "$1" != "" ]; then
+( /usr/bin/ldapsearch -l 30 -LLL -x -h ldap.princeton.edu -S pudisplayname -b "o=Princeton University,c=US" "cn=*$1*" cn universityid seealso telephonenumber studenttelephonenumber facsimiletelephonenumber street studentstreet ou mail emailbox uid voicemailbox labeleduri pudisplayname && echo "TMPDELIMITER" ) | sed -n "1 {
+	$ {
+		p
+	}
+	h
+	b theend
+}
+/^ /{
+	x
+	G
+	s/^\(.*\)\n \(.*\)$/\1\2/g
+	$ {
+	p
+	}
+	x
+	b theend
+}
+$ {
+	H
+	x
+	p
+	b theend
+}
+/^ /!{
+	x
+	p
+}
+: theend
+" | sed "1s/^TMPDELIMITER$/$NOTFOUNDMSG/g
+/^#/D
+/^$NOTFOUNDMSG/q
+1!s/^TMPDELIMITER$/TOREMOVELINE/g
+1a\\
+$DELIMITER
+#\$a\\
+#$DELIMITER
+/^TOREMOVELINE/D
+s/^universityid: /                   alias: /g
+s/^telephonenumber: /                   phone: /g
+s/^facsimiletelephonenumber: /                     fax: /g
+s/^street: /                 address: /g
+s/^studentstreet: /         student_address: /g
+s/^ou: /              department: /g
+s/^mail: /                   email: /g
+s/^emailbox: /                emailbox: /g
+s/^uid: /                   netid: /g
+s/^voicemailbox: /            voicemailbox: /g
+s/^labeleduri: /                homepage: /g
+s/^studenttelephonenumber: /           student_phone: /g
+s/^seealso: cn=\(.*\),o=.*/                 seealso: \1/g
+#s/^cn\=.*c=US.*$/--------------------------------------------------------/g
+/^cn: .*c=US.*$/D
+/^cn: .*@.*$/D
+/^dn: /D
+s/^cn: /                    name: /g
+/^sn: /D
+/^pudisplayname: /D
+/^givenname/D
+/^objectclass/D
+/^universityidref/D
+/^universityembref/D
+/^mailmessagestore/D
+/^pumailstore/D
+/^mailquota/D
+/^pustatus/D
+/^modifiersname/D
+/^modifytime/D
+/^puhomedepartment/D
+/^mailhost/D
+/^campusid/D
+/^search/D
+/^version/D
+/^result/D
+/^maildeliveryoption/D
+/^mailalternateaddress/D
+/^emailrewrite/D
+/^pts42/D
+/^creatorsname/D
+/^createtimestamp/D
+/^puunitnumber/D
+/^street::/D
+s/^$/$DELIMITER/g"  | more
+else
+	echo "Please supply an argument to use for searching."
+fi
+

@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+awk '
+  {
+    if($0~/MD Simulation time step/)
+    {
+      b+=dt*(a-c)
+      old_dt=dt
+      dt=$6
+      c=-1
+    }
+    else if(NF==12)
+    {
+      if($1==$1+0)
+      {
+        if(c==-1)
+        {
+          c=$1-1
+          if(c<a)
+            b-=(a-c)*old_dt
+        }  
+        a=$1
+      }
+      else if($1=="*****")
+      {
+        if(c==-1)
+        {
+          c+=1
+          if(c<a)
+            b-=(a-c)*old_dt
+        }  
+        a=a+1
+      }
+    }
+  }
+  END{printf "%.2f ps\n", (b+dt*(a-c))*2.4e-5}
+  
+' output.txt

@@ -1,0 +1,140 @@
+#!/usr/bin/env bash
+# if you want to plot only say plot right after the pp command
+# else choose the quantity to be plotted (either chden, totV, spol
+# totV1(w/o exchange?), or any valid integer), give the outdir if 
+# not default, one of (x, y, z) if you want it to be averaged.
+# for plotting use 'plot filename(i) weight(j) ... .' with a literal
+# dash at the end! if you are not only plotting, then include weight 
+# of the currenlty calculated data before the first filename
+#
+plot=0
+skip=0
+direction=0 
+filename="pp"
+outdir="./"
+queue="cfn_short"
+node="gen03"
+declare -a plots weights
+plots[0]=$filename.dat
+weights[0]=1
+time=10
+
+if [[ $1 = plot ]]; then
+  unset plots
+  unset weights
+  declare -a plots weights
+  skip=1
+fi
+
+while [[ $# > 0 ]]; do
+  if  [[ $1 = "chden" ]];then
+    filename="chden"
+    plots[0]=$filename.dat
+    index=0
+    shift
+  elif [[ $1 = "totV" ]]; then
+    filename="totV" 
+    plots[0]=$filename.dat
+    index=1
+    shift
+  elif [[ $1 = "spol" ]]; then
+    filename="spol"
+    plots[0]=$filename.dat
+    index=6
+    shift
+  elif [[ $1 = "totV1" ]]; then
+    filename="totV1"
+    plots[0]=$filename.dat
+    index=11
+    shift
+  elif [[ $1 =~ ^[0-9]+$ ]]; then
+    index=$1
+    shift
+  elif [[ "$1" == *./* ]]; then
+    outdir="$1"
+    shift
+  elif [[ $1 = x ]]; then
+    direction=1
+    shift
+  elif [[ $1 = y ]]; then
+    direction=2
+    shift
+  elif [[ $1 = z ]]; then
+    direction=3
+    shift
+  elif [[ $1 = -o ]]; then
+    shift
+    filename=$1
+    plots[0]=$filename.dat
+    shift 
+  elif [[ $1 = -t ]]; then
+    shift
+    time=$1
+    shift
+  elif [[ $1 = -g ]]; then
+    queue="cfn_gen04"
+    node="gen04"
+    shift
+  elif [[ $1 = plot ]]; then
+    plot=1
+    shift
+    if  [[ $1 =~ ^-?[0-9]+.?[0-9]*$ ]];then
+      weights[0]=$1
+      shift
+    fi
+    while [[ $1 != . ]]; do
+      plots=("${plots[@]}" "$1")
+      shift
+      if  [[ $1 =~ ^-?[0-9]+.?[0-9]*$ ]];then
+        weights=("${weights[@]}" "$1")
+        shift
+      else
+        weights=("${weights[@]}" "1")
+      fi
+    done
+    shift
+  fi
+done
+
+if [[ $skip = 0 ]]; then
+  echo -e "&INPUTPP\n  outdir = '$outdir'\n  plot_num = $index\n  filplot = '$filename.dat'\n/" > $filename.in
+else
+  echo -e "&INPUTPP\n/" > $filename.in
+fi
+
+if [[ $plot > 0 ]]; then
+  echo -e "&PLOT\n  nfile = ${#plots[@]}," >> $filename.in
+  for (( i = 0; i < ${#plots[@]}; i++ )); do
+    echo -e "  filepp($(($i+1))) = '${plots[$i]}',\n  weight($(($i+1))) = ${weights[$i]}," >> $filename.in
+  done
+  echo -e "  iflag = 3,\n  output_format = 6,\n  fileout = '${filename}.cube',\n/" >>$filename.in
+fi
+
+cat > $filename.job << EOF
+#!/bin/bash
+#PBS -l nodes=1:ppn=1:$node,walltime=00:$time:00
+#PBS -q $queue
+#PBS -m ae
+#PBS -M sselcuk@princeton.edu
+#PBS -j oe
+#PBS -o /dev/null
+#PBS -V
+module load intel intel_mkl mvapich2/1.4-intel
+kpools=1
+images=1
+gap=300
+exec_path="\$HOME/software/espresso-4.3.2/bin/"
+cd \$PBS_O_WORKDIR
+mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}pp.x < $filename.in > $outdir/$filename.out
+rm $filename.in $filename.job 
+EOF
+
+if [[ $direction > 0 ]]; then
+  echo -e "1\n$filename.dat\n1.0\n1000\n$direction\n2.59" > ${filename}_aver.in
+  cat >> $filename.job << EOF
+mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}average.x < ${filename}_aver.in > $filename.average
+rm ${filename}_aver.in
+EOF
+fi
+
+qsub $filename.job

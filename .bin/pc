@@ -1,0 +1,5 @@
+#!/bin/bash
+#
+p=${PWD//\//\\/}
+pa="s/RemoteDirectory=.*\$/RemoteDirectory=$p/"
+ssh -x -p2318 sselcuk@localhost "cd '/cygdrive/c/WinSCP'; sed -i \"$pa\"  WinSCP.ini" 

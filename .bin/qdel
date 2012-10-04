@@ -1,0 +1,8 @@
+#!/bin/bash
+if [[ "$PWD" == *bnl* ]];then
+  ssh -q -p6166 localhost "qdel $@"
+elif [[ "$PWD" == *hopper* ]];then
+  ssh -q hopper "/usr/common/nsg/bin/qdel $@"
+else
+  ssh -q della "qdel $@"
+fi 

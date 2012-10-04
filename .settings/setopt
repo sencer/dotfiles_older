@@ -1,0 +1,6 @@
+setopt  alwaystoend appendhistory autocd beep extendedglob automenu \
+        autopushd banghist cdablevars chasedots completeinword \
+        extendedhistory histexpiredupsfirst histignorespace sharehistory \
+        correctall extendedglob hashlistall histnostore histreduceblanks magicequalsubst \
+        promptsubst pushdignoredups pushdminus histignorealldups nullglob
+unsetopt flowcontrol menucomplete   # do not autoselect the first completion entry \

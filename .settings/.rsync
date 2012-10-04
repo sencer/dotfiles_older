@@ -1,0 +1,8 @@
+.gitconfig
+.ssh
+.zlogout
+.vim/bundle
+.vimrc
+.settings
+.zshrc
+.bin

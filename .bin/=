@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# a simple calculator
+if [ $# == 0 ];then
+  step=0
+  while true
+  do read -p "" bashcalc;
+    if [ "$bashcalc" = "q" ];then
+      if [ "$temp" = "" ];then
+        echo -e "\b\r\033[K\b\r"
+        exit
+      fi
+      echo -e "\b\r\033[K\b\r\033[K$temp = `echo "scale=4; $temp"|bc`"
+      exit
+    fi
+    if [ "$bashcalc" = "c" ];then
+      echo -e "\b\r\033[K\b\r\033[K$temp = `echo "scale=4; $temp"|bc`"
+      = 
+      exit
+    fi
+    if [ $step == 0 ];then
+      echo
+      temp="$bashcalc"
+      step=1
+    else
+      temp="($temp)$bashcalc"
+    fi
+    echo -e "\b\r\b\r\033[K$temp"
+    echo -ne "\033[K`echo "scale=4; $temp" | bc`"
+  done
+else
+  temp="$@"
+  echo $temp
+  echo -ne "`echo "scale=4;$temp"|bc`"
+  while true
+  do read -p "" bashcalc;
+    if [ "$bashcalc" = "q" ];then
+      if [ "$temp" = "" ];then
+        echo -e "\b\r\033[K\b\r"
+        exit
+      fi
+      echo -e "\b\r\033[K\b\r\033[K$temp = `echo "scale=4; $temp"|bc`"
+      exit
+    fi
+    if [ "$bashcalc" = "c" ];then
+      echo -e "\b\r\033[K\b\r\033[K$temp = `echo "scale=4; $temp"|bc`"
+      =
+      exit
+    fi
+
+
+    temp="($temp)$bashcalc"
+    echo -e "\b\r\b\r\033[K$temp"
+    echo -ne "\033[K`echo "scale=4; $temp" | bc`"
+  done
+fi
+

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+cd ~/dugun
+export PATH=::~/.bin:$PATH:$HOME/.rvm/bin
+source $HOME/.rvm/scripts/rvm
+RAILS_ENV=production rake veri:facebook
+# rake veri:facebook

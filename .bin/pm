@@ -1,0 +1,13 @@
+#!/bin/bash
+#
+a=$(echo `basename $(pwd)`)
+filein=$a".pdb"
+fileout=$a	
+if [ $# == 3 ];then
+        pdbman -i $filein -o $fileout -x $1 -y $2 -z $3
+elif [ $# == 6 ];then
+	pdbman -i $filein -o $fileout -x $1 -y $2 -z $3 -sx $4 -sy $5 -sz $6
+else
+	echo "wrong number of arguments"
+fi
+	# mv $fileout $filein

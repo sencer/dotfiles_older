@@ -1,0 +1,18 @@
+#!/bin/bash
+if  [[ $# = 0 ]];then
+  jobs="*.job"
+else
+  jobs="$@"
+fi
+if [[ "$PWD" == *tigress* ]];then
+  ssh -q della "cd ${PWD/tigress/tigress\/phd}; qsub $jobs"
+elif [[ "$PWD" == *bnl* ]];then
+  ssh -q -p6166 localhost "cd ${PWD/home\/sselcuk\/bnl/home3\/sselcuk}; qsub $jobs"
+elif [[ "$PWD" == *hopper* ]];then
+  ssh -q hopper "cd ${PWD/\/home\/sselcuk\/hopper/\/global\/homes\/s\/sselcuk}; /usr/common/nsg/bin/qsub $jobs"
+  # ssh -q hopper "cd ${PWD/\/home\/sselcuk\/hopper/\/global\/homes\/s\/sselcuk}; /opt/torque/2.5.9/bin/qsub $jobs"
+else
+  echo "Are you sure you are in the correct folder?"
+fi 
+
+

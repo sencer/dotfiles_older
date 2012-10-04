@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+filename='projwfc'
+outdir='./'
+queue="cfn_short"
+node="gen03"
+time=25
+
+while [[ $# > 0 ]]; do
+  if [[ "$1" == *./* ]]; then
+    outdir="$1"
+    shift
+  elif [[ $1 = -o ]]; then
+    shift
+    filename=$1
+    plots[0]=$filename.dat
+    shift 
+  elif [[ $1 = -t ]]; then
+    shift
+    time=$1
+    shift
+  elif [[ $1 = -g ]]; then
+    queue="cfn_gen04"
+    node="gen04"
+    shift
+  fi
+done
+
+echo -e "&INPUTPP\noutdir = '$outdir'\n  DeltaE= 0.01, \n filpdos='pdos_'\nfilproj='proj_'\n/" > $filename.in
+
+cat > $filename.job << EOF
+#!/bin/bash
+#PBS -l nodes=1:ppn=1:$node,walltime=00:$time:00
+#PBS -q $queue
+#PBS -m ae
+#PBS -M sselcuk@princeton.edu
+#PBS -j oe
+#PBS -o /dev/null
+#PBS -V
+module load intel intel_mkl mvapich2/1.4-intel
+kpools=1
+images=1
+gap=300
+exec_path="\$HOME/software/espresso-4.3.2/bin/"
+cd \$PBS_O_WORKDIR
+mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}projwfc.x < $filename.in > $outdir/$filename.out
+rm $filename.in $filename.job 
+EOF
+
+qsub $filename.job

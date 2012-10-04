@@ -1,0 +1,7 @@
+function git_prompt(){
+  branch=$(git symbolic-ref HEAD 2> /dev/null)||return
+  echo "[${branch#refs/heads/}]"
+}
+gitp(){
+  export RPROMPT="%F{73}\$(git_prompt)%f"$RPROMPT
+}

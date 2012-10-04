@@ -1,0 +1,40 @@
+#!/usr/bin/zsh
+#set -x
+if [ `wc -l < ~/.settings/.namaz` -lt 3 ];then
+  rm ~/.settings/.namaz
+  namaz=(${(A)$(curl -s http://www.diyanet.gov.tr/turkish/namazvakti/vakithes_namazsonuc.asp -d 'sehirler=PRINCETON&R1=AYLIK&buton=Hesapla&ulk=ABD'|\sed -r 's/<[^>]*>|\s{2,}|&nbsp;.*//g;/^[^\d48-\d57]|^$|.*[a-z].*/d')})
+  for ((i=1;i<451;i++)); do
+    if [ $[$i%15] = 1 ];then
+      if [ $i -gt 1 ];then echo "">> ~/.settings/.namaz;fi
+      echo -ne "${${namaz[$i]}%%.*}\t" >> ~/.settings/.namaz
+    else
+      echo -ne "$[namaz[$i]*60+namaz[$[$i+1]]]\t" >> ~/.settings/.namaz
+      let i++
+    fi
+  done
+  unset namaz
+  unset i
+fi
+line1=($(sed 1q ~/.settings/.namaz))
+while [ $line1[1] -lt `date +%d` ];do
+  sed -i '1d' ~/.settings/.namaz
+  line1=($(sed 1q ~/.settings/.namaz))
+done
+namazlar=($(sed 1q ~/.settings/.namaz))
+namazlar[8]=$[namazlar[2]+1440]
+unset line1
+
+kalan_vakit(){
+  saat=$[$(date +%k)*60+$(date +%M)]
+  for ((i=2;i<9;i++)); do
+    if [ $saat -lt $namazlar[$i] ];then dk=$[$namazlar[$i]-$saat]
+      echo "[$[$dk/60]sa$[$dk%60]dk]"
+      return
+    fi
+  done
+}
+namaz(){
+  if [[ $# > 0 ]]; then a=$1 else a=3 fi
+  printf "  Tarih   Imsak  Gunes  Ogle   Ikindi Aksam  Yatsi\n"
+  awk -v ay=`date +%m-%y` -v a=$a '{satir++; if(satir>a)exit;printf "%02d-%s  %02d:%02d  %02d:%02d  %02d:%02d  %02d:%02d  %02d:%02d  %02d:%02d\n", $1, ay, $2/60, $2%60,$3/60, $3%60,$4/60, $4%60,$5/60, $5%60,$6/60, $6%60,$7/60, $7%60}' ~/.settings/.namaz
+}

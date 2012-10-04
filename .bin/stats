@@ -1,0 +1,55 @@
+#!/bin/bash
+#
+filein="output.txt"
+if [ $1 ]
+  then
+    filein=$1
+fi
+fileout="stats.txt"
+if [ $2 ]
+  then
+    fileout=$2
+fi
+
+awk 'BEGIN {parsing=0}
+{
+# see if we have the line to start a block of numbers
+#	print	
+	if ($1  ~ /nfi/    &&
+		$2  ~ /ekinc/  &&
+		$3  ~ /temph/  &&
+		$4  ~ /tempp/  &&
+		$5  ~ /etot/   &&
+		$6  ~ /enthal/ &&
+		$7  ~ /econs/  &&
+		$8  ~ /econt/  &&
+		$9  ~ /vnhh/   &&
+		$10 ~ /xnhh0/  &&
+		$11 ~ /vnhp/   &&
+	  	$12 ~ /xnhp0/)
+	{
+		parsing=1
+#		print "parsing"
+	}
+	else if (parsing==1 && ($0 == "" || $12 == ""))
+	{
+		getline l
+		split(l,tmp)
+		if (tmp[1] ~ /writing/ && tmp[2] ~ /restart/ && tmp[3] ~ /file/)
+		{
+# skip two lines
+			getline l
+			getline l
+		}
+		else
+		{
+			parsing=0
+#			print "end parsing"
+		}
+	}
+	else if (parsing==1)
+	{
+		print $0
+	}
+}' $filein > $fileout
+

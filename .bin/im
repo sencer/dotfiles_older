@@ -1,0 +1,88 @@
+#!/bin/bash
+#
+x=1
+y=1
+z=1
+sx=0
+sy=0
+sz=0
+filein="input.txt"
+fileout="input_new.txt"
+while [ $# -ne 0 ];do
+	if [ $1 == '-x' ];then
+		shift
+		x=$1
+	elif [ $1 == '-y' ];then
+		shift
+		y=$1
+	elif [ $1 == '-z' ];then
+		shift
+		z=$1
+	elif [ $1 == '-sx' ];then
+		shift
+		sx=$1
+	elif [ $1 == '-sy' ];then
+		shift
+		sy=$1
+	elif [ $1 == '-sz' ];then
+		shift
+		sz=$1
+	elif [ $1 == '-i' ];then
+		shift
+		filein=$1
+		fileout=${filein%.*}"_new.txt"
+	elif [ $1 == '-b' ];then
+		filein=$(echo `basename $(pwd)`)".txt"
+		fileout=${filein%.*}"_new.txt"
+	elif [ $1 == '-o' ];then
+		shift
+		fileout=$1
+	fi
+shift
+done
+echo "$filein -> $fileout"
+awk 'BEGIN{
+	parse=0
+	x='"$x"'	
+	y='"$y"'	
+	z='"$z"'	
+	sx='"$sx"'	
+	sy='"$sy"'	
+	sz='"$sz"'	
+	}
+	{
+	if($1=="celldm(1)")
+		a=$3*0.5292
+	if($1=="celldm(2)")
+		b=a*$3
+	if($1=="celldm(3)")
+		c=a*$3
+	if($1~/ATOMIC_POSITIONS/){
+		if($2=="(crystal)"){
+			a=1
+			b=1
+			c=1
+		}
+		print $0
+		parse=1
+		getline
+	}
+	if($1~/K_POINTS/ || $1~/End/){
+		parse=0}
+	if(parse==0)
+		print $0
+	if(parse==1){
+		cx=$2+sx
+		cy=$3+sy
+		cz=$4+sz
+		if(cx-x>a) cx=cx-a
+		if(cx+x<0) cx=cx+a
+		if(cy-y>b) cy=cy-b
+		if(cy+y<0) cy=cy+b
+		if(cz-z>c) cz=cz-c
+		if(cz+z<0) cz=cz+c
+		if(NF==7)
+			printf "%-5s %12.8f %12.8f %12.8f %d %d %d\n",  $1, cx, cy, cz, $5, $6, $7
+		else
+			printf "%-5s %12.8f %12.8f %12.8f\n",  $1, cx, cy, cz
+	}}' $filein > $fileout

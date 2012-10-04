@@ -1,0 +1,10 @@
+#!/bin/bash
+#
+  if [[ "$PWD" == *bnl* ]];then
+    ssh -q -p6166 localhost "qstat $@"
+  elif [[ "$PWD" == *hopper* ]];then
+    # ssh -q hopper "~/bin/q"
+    ssh -q hopper "/usr/common/usg/bin/qstat $@"
+  else
+    ssh -q della "qstat $@"
+  fi 

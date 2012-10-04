@@ -1,0 +1,25 @@
+#!/bin/zsh
+#
+if [ $# = 0 ];then
+  if [[ "$PWD" == *bnl* ]];then
+    ssh -q -p6166 localhost "~/bin/q"
+  elif [[ "$PWD" == *hopper* ]];then
+    ssh -q hopper "source ~/.bash_profile;~/bin/q"
+    # ssh -q hopper "/usr/common/usg/bin/qstat -u sselcuk"
+  else
+    ssh -q della "~/bin/q"
+  fi 
+fi
+
+while [ $# -gt 0 ];do 
+  if [[ "$1" == "hopper" || "$1" == 1 ]];then
+    ssh -q hopper "/usr/common/usg/bin/qstat -u sselcuk"
+    # ssh -q hopper "~/bin/q"
+  elif [[ "$1" == "bnl" || "$1" == 2 ]];then
+    ssh -q -p6166 localhost "~/bin/q"
+  else
+    ssh -q della "~/bin/q"
+  fi
+  shift
+done
+

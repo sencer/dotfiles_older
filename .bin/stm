@@ -1,0 +1,281 @@
+#!/bin/bash
+
+#print the help message
+function usage
+{
+	echo "usage: calculate_stm.sh [-m mode] [-f] [-b bias] [-i iso] [-zl lower] [-zh higher] [-c chop] [-n] [-h]"
+	echo ""
+	echo "       This code will calculate the the STM image for the PwSCF results in the parent directory .."
+	echo ""
+	echo "       parameters:"
+	echo "           -m --mode          STM mode - either ch for constant height or cd for constant density"
+	echo "                              default: cd"
+	echo ""
+	echo "           -f --fermi-bias    flag if the bias is to be taken from the fermi level instead of the conduction band minimum"
+	echo "                              default: conduction band minimum"
+	echo ""
+	echo "           -b --bias          bias in eV to be applied either from the conduction band minimum or the fermi energy, see option -f"
+	echo "                              default: 2.75"
+	echo ""
+	echo "           -i --iso           iso-value in eV/Ang^3 to be used in constant density STM mode"
+	echo "                              default: 0.0001"
+	echo ""
+	echo "           -zl --z-low         lower bound of the z-window"
+	echo "                              default: 3.3 Ang above highest Ti"
+	echo ""
+	echo "           -zh --z-high        upper bound of the z-window"
+	echo "                              default: 4.0 Ang above highest Ti"
+	echo ""
+	echo "           -c --chop          z value below which atoms are not displayed"
+	echo "                              default: 7.5 Ang"
+	echo ""
+	echo "           -n --no-chop       flag to supress the hiding of atoms below parameter -c"
+	echo "                              default: not set"
+	echo ""
+	echo "           -q --no-quit       do not dump the image and quit but keep xcrysden open"
+	echo "                              default: dump and quit"
+	echo ""
+	echo "           -h --help          display this help message"
+}
+
+#set default parameters
+stm_mode="cd"
+fermi_bias="0"
+bias="2.75"
+iso="0.0001"
+z_range_min="3.3"
+z_range_max="4.0"
+chop_bottom="1"
+chop_z="7.45"
+no_dump_quit="0"
+
+#scan command line
+while [ "$1" != "" ]; do
+    case $1 in
+        -m | --mode )      	    shift
+                                stm_mode=$1
+                                if [ "stm_mode" != "ch" ] && [ "stm_mode" != "cd" ]; then
+                                	usage
+                                	exit 1
+                                fi
+                                ;;
+        -f | --fermi-bias )	    fermi_bias="1"
+                                ;;
+        -b | --bias )           shift
+        						bias=$1
+        						;;
+        -i | --iso )            shift
+        						iso=$1
+        						;;
+        -zl | --z-low )			shift
+        						z_range_min=$1
+        						;;
+        -zh | --z-high )		shift
+        						z_range_max=$1
+        						;;
+        -c | --chop )			shift
+        						chop_bottom="1"
+        						chop_z=$1
+        						;;
+        -n | --no-chop )		shift
+        						chop_bottom="0"
+        						;;
+        -q | --no-quit )		shift
+        						no_dump_quit="1"
+        						;;						
+        -h | --help )           usage
+                                exit
+                                ;;
+        * )                     usage
+                                exit 1
+    esac
+    shift
+done
+
+#do some output
+echo "-------------------------- Input parameters ---------------------------"
+if [ "$stm_mode" == "cd" ]; then
+	echo "STM Mode: constant density"
+else
+	echo "STM Mode: constant height"
+fi
+
+if [ "$fermi_bias" == "1" ]; then
+	echo "Bias taken from Fermi energy"
+else
+	echo "Bias taken from conduction band minimum"
+fi
+
+echo "Bias: " $bias " eV"
+
+if [ "$stm_mode" == "cd" ]; then
+	echo "Iso value: " $iso
+fi
+
+echo "Z-range: " $z_range_min " - " $z_range_max " Ang from highest Ti"
+
+if [ "$chop_bottom" == "1" ]; then
+	echo "Atoms below " $chop_z " will be hidden"
+fi
+
+echo "-----------------------------------------------------------------------"
+
+#calculate the bias
+test=$(cd ..;cbb_bias.sh -b $bias)
+echo $test
+
+if [ "$fermi_bias" == "0" ]; then
+	bias=$(cd ..;cbb_bias.sh -b $bias | grep -a "fermi bias" | awk '{print $4}')
+fi
+
+#convert to rydberg
+ry=$(echo "$bias*0.0735" | bc)
+
+echo "Bias from Fermi to be used: $bias eV = $ry Ry"
+
+#if the basic STM data has not been calculated yet
+if [ ! -f stm_${bias}eV.xsf ]; then
+
+	#create input file
+	cat > stm_${bias}eV.in << EOF
+	
+	&inputpp
+	    outdir           = '../'
+	    plot_num         = 5
+	    sample_bias      = $ry
+	    plot_num         = 5
+	/
+	&plot
+	   iflag             = 3
+	   output_format     = 5
+	   fileout           = 'stm_${bias}eV.xsf'
+	/
+EOF
+	
+	echo "Calculating 3D STM data with pp.x..."
+
+	#run the calculation
+	mpirun -np 8 /home/sselcuk/software/espresso-4.2.1/PP/pp.x < stm_${bias}eV.in > pp.out 2>&1
+fi
+
+#remove the large temp file
+if [ -f tmp.pp ]; then
+	rm tmp.pp
+fi
+
+#now chop the bottom if necessary
+if [ "$chop_bottom" == "1" ] && [ ! -f stm_${bias}eV.xsf.btl ]; then
+	echo "Hiding bottom atoms..."
+	bottomless $chop_z stm_${bias}eV.xsf
+fi
+
+#now only if we do a constant density perform this run
+if [ "stm_mode" != "cd" ]; then
+
+	#perform the constant density calculation
+	if [ ! -f stm_${bias}eV_${iso}.xsf ]; then
+		echo "Calculating constant density STM image with constant_density_stm..."
+		constant_density_stm -i stm_${bias}eV.xsf -o stm_${bias}eV_${iso}.xsf -v $iso -p 25.0 -h 5.0 > cd.out
+	fi
+
+	#if necessary chop the bottom 
+	if [ "$chop_bottom" == "1" ] && [ ! -f stm_${bias}eV_${iso}.xsf.btl ]; then
+		echo "Hiding bottom atoms..."
+		bottomless $chop_z stm_${bias}eV_${iso}.xsf
+	fi
+    
+	#now strip the large 3D grid, which makes XCrysden quite slow
+	if [ ! -f stm_${bias}eV_${iso}.xsf.btl.sml ]; then
+		echo "Removing 3D Grid data..."
+	    awk 'BEGIN{write=1}
+	    	{
+		    	if($0 == "BEGIN_BLOCK_DATAGRID_3D")
+		    		write=0;
+		    	else if ($0 == "END_BLOCK_DATAGRID_3D")
+		    		write=1;
+		    	else if (write)
+		    		print $0;
+			}' stm_${bias}eV_${iso}.xsf.btl > stm_${bias}eV_${iso}.xsf.btl.sml
+	fi
+fi
+
+#get the z range and calculate bounds from highest atom
+echo "Determining atom z range..."
+range=$(awk 'BEGIN{ti=-100;ti2=-100;high=-100;scan=0}{
+
+	if ($1 == "PRIMCOORD")
+	{
+		scan = 1
+		getline
+	}
+	else if ($1 == "BEGIN_BLOCK_DATAGRID_3D")
+	{
+		scan = 0
+		exit
+	}
+	else if (scan == 1)
+	{	
+		if ($4 > high)
+			high = $4
+		
+		if ($1 == "Ti")
+		{
+			if ($4 > ti)
+			{
+				ti2 = ti
+				ti = $4
+			}
+			else if ($4 > ti2)
+			{
+				ti2 = $4
+			}
+		}
+	}
+	
+}
+END{print ti2, high}' stm_${bias}eV.xsf)
+ti5c=$(echo $range | awk '{print $1}')
+top=$(echo $range | awk '{print $2}')
+bound_l=$(echo "$z_range_min - $top + $ti5c" | bc)
+bound_h=$(echo "$z_range_max - $top + $ti5c" | bc)
+#prepare the xcrysden script file for displaying
+echo "Display in xcrysden..."
+cat > display.xcrysden << EOF
+
+::scripting::open --xsf stm_${bias}eV_${iso}.xsf.btl.sml
+
+wm geometry . 1680x1000
+
+set nxdir 3
+set nydir 3
+set nzdir 1
+
+xc_newvalue .mesa 23 1.000000 1.000000 1.000000 1.000000
+
+CellMode 1
+DispFramesAs
+xc_newvalue .mesa 2
+
+array set DG {envar0,0 1.0 ident,0 chz cb0,0 1 r0 .dg.1.c.f0.r0 YSpace 15 yspace 5 c0,0 .dg.1.c.sf0_0.r l0,0 .dg.1.c.sf0_0.l2 n_block 1 e0,0 .dg.1.c.sf0_0.e bw 
+472 blockFont font16 bh 40 type,0 2D n_subblock,0 1 subident,0,0 BEGIN_DATAGRID_2D_this_is_2Dgrid#2 ystart 184 radio 0}
+DataGridOK
+array set isoControl {2Dlowvalue $bound_l 2Dhighvalue $bound_h isoline 0}
+array set prop {datagridDim 0 type_of_run RHF}
+array set isosurf {2Dexpand whole 2Dexpand_Z 1}
+UpdatePropertyPlane
+array set DataGrid {launch_command IsoControl2D dim 2D first_time exists}
+
+xc_translparam    set  0.000000000000000e+00  0.000000000000000e+00  3.000000000000000e+00
+.mesa cry_toglzoom 0.0
+
+EOF
+
+if [ "$no_dump_quit" == "0" ]; then
+	cat >> display.xcrysden << EOF
+scripting::printToFile stm_${bias}eV_${iso}.xsf.btl.sml.png
+exit
+EOF
+fi
+
+xcrysden -s display.xcrysden > xc.out 2>&1
+

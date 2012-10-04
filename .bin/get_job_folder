@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+if [[ $# = 1 ]]; then
+  a=($(q | awk '{if($1==$1+0)printf "%d %s ", $1, gensub(".job","","g",$2) }END{print ""}'))
+  for ((i=1;i<$[$a[(I)$a[-1]]+1];i++));do 
+    if [[ $1 = $a[i] ]]; then
+      drn=$(dirname `qstat -f $a[$[i-1]]|grep Output_Path|cut -d ":" -f 2`)
+      break
+    fi
+  done
+  if [[ $drn = "" ]]; then
+    exit 5;
+  fi
+  if [[ "$PWD" == *tigress* ]];then
+    echo ${drn/tigress\/phd/tigress}
+  elif [[ "$PWD" == *bnl* ]];then
+  echo ${drn/home3\/sselcuk/home\/sselcuk\/bnl}
+  elif [[ "$PWD" == *hopper* ]];then
+    echo ${drn/global\/homes\/s\/sselcuk/home\/sselcuk\/hopper}
+  fi 
+fi

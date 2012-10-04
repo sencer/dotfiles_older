@@ -1,0 +1,19 @@
+bindkey ' ' magic-space    # also do history expansion on space
+bindkey "\e\C-?"  backward-kill-line
+bindkey "\C-?"  backward-kill-word
+bindkey "\e[1;5D"  backward-word
+bindkey "\e[5~" beginning-of-history # PageUp
+bindkey "\e[1~" beginning-of-line # Home
+bindkey "\e[3~" delete-char # Del
+bindkey -s '\el' "ls\n"
+bindkey "\e[6~" end-of-history # PageDown
+bindkey "\e[4~" end-of-line # End
+bindkey "\e[1;5C"  forward-word
+bindkey "OA" history-beginning-search-backward
+bindkey "OB" history-beginning-search-forward
+bindkey "\e[A" history-beginning-search-backward
+bindkey "\e[B" history-beginning-search-forward
+bindkey "\e[3;6~"  kill-line
+bindkey "\e[3;5~"  kill-word
+bindkey "\e[2~"  quoted-insert
+bindkey "\e[Z" reverse-menu-complete # Shift+Ta

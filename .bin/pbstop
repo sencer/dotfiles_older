@@ -1,0 +1,8 @@
+#!/bin/bash
+if [[ "$PWD" == *bnl* ]];then
+  ssh -qt -p6166 localhost "~/bin/pbstop"
+elif [[ "$PWD" == *hopper* ]];then
+  ssh -qt hopper "~/bin/pbstop"
+else
+  ssh -qt della "~/bin/pbstop"
+fi 

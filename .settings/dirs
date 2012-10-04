@@ -1,0 +1,15 @@
+if [ ! -f ~/.settings/.dirs ]; then  # if doesn't exist, create it
+  touch ~/.settings/.dirs
+fi
+
+alias show='cat ~/.settings/.dirs'
+save (){
+  command sed "/!$/d" ~/.settings/.dirs > ~/.settings/.dirs1; \mv ~/.settings/.dirs1 ~/.settings/.dirs; echo "$@"=\"`pwd`\" >> ~/.settings/.dirs; source ~/.settings/.dirs ;
+}
+
+del(){
+  sed -i "/^_\?$@=/d" ~/.settings/.dirs;
+  unset {,_}$@
+}
+source ~/.settings/.dirs  # Initialization for the above 'save' facility: source the ..settings/.dirs file
+# setopt cdablevars # set the bash option so that no '$' is required when using the above facility

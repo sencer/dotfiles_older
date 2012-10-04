@@ -1,0 +1,39 @@
+bnl(){
+  if [ -d ~/bnl ];then
+    [[ "$PWD" == *sselcuk/bnl* ]] && cd ~
+    fusermount -z -u ~/bnl 2>/dev/null && \rm -r ~/bnl 
+    kill -9 ${$(netstat -atnp 2>/dev/null|grep '127.0.0.1:6166'|grep '0.0.0.0'|tr -s ' '|cut -d " " -f 7)/\/ssh/}
+  else
+    mkdir ~/bnl
+    ssh -L 6166:nano.bnl.gov:22 ssh.bnl.gov -fqN
+    # export BNLPID=${$(netstat -atnp 2>/dev/null|grep ':6166' -m1|tr -s ' '|cut -d " " -f 7)/\/ssh/}
+    sshfs -p 6166 localhost:. ~/bnl -o transform_symlinks -o follow_symlinks -o workaround=rename
+    ls
+  fi
+}
+
+hopper(){
+  if [ -d ~/hopper ];then
+    [[ "$PWD" == *sselcuk/hopper* ]] && cd ~
+    (fusermount -z -u ~/hopper && \rm -r ~/hopper)||echo "Error"
+    export PROMPT="%F{73}%h:%F{174}%C%f "
+    export RPROMPT="%F{73}\$(kalan_vakit)[\${PWD/\/home\/sselcuk/~}]%f"
+  else
+    mkdir ~/hopper
+    sshfs hopper.nersc.gov:. ~/hopper -o transform_symlinks -o follow_symlinks -o workaround=rename # -o Ciphers=arcfour
+    export PROMPT="%F{73}%h:%F{174}%C%f "
+    export RPROMPT="%F{73}[\${PWD/\/home\/sselcuk/~}]%f"
+    ls
+  fi 
+}
+
+della(){
+  if [ -d ~/tigress ];then
+    [[ "$PWD" == *sselcuk/tigress* ]] && cd ~
+    (fusermount -z -u ~/tigress && \rm -r ~/tigress)||echo "Error"
+  else
+    mkdir ~/tigress
+    sshfs tigress:tigress/phd ~/tigress -o transform_symlinks -o follow_symlinks -o workaround=rename
+    ls
+  fi 
+}
