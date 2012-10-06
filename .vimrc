@@ -23,27 +23,30 @@ Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-abolish'
 Bundle 'jonasb/camelcasemotion'
 Bundle 'tpope/vim-eunuch'
-" Bundle 'vim-scripts/SearchComplete'
+Bundle 'vim-scripts/SearchComplete'
 Bundle 'sencer/vim-qespresso'
 " Bundle 'hotoo/calendar-vim'
 "----------Visual----------
-Bundle 'kien/rainbow_parentheses.vim'
+Bundle 'bothra90/rainbow_parentheses.vim'
+" Bundle 'kien/rainbow_parentheses.vim'
+" Bundle 'kshenoy/vim-rainbow_parentheses'
 Bundle 'vim-scripts/wombat256.vim'
 " Bundle 'tomasr/molokai'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'gnuplot.vim'
 Bundle 'CSApprox'
 "----------Completion----------
-" Bundle 'Rip-Rip/clang_complete'
 Bundle 'oblitum/clang_complete'
-" Bundle 'ervandew/supertab'
+" Bundle 'Rip-Rip/clang_complete'
 Bundle 'vim-scripts/AutoComplPop'
+" Bundle 'ervandew/supertab'
 " Bundle 'Shuogo/neocomplcache'
 Bundle 'SirVer/ultisnips'
 " Bundle 'garbas/vim-snipmate'
 " Bundle 'honza/snipmate-snippets'
-Bundle 'Townk/vim-autoclose'
-" Bundle 'jiangmiao/auto-pairs'
+Bundle 'jiangmiao/auto-pairs'
+" Bundle 'Townk/vim-autoclose'
+" Bundle 'Raimondi/delimitMate'
 Bundle 'tpope/vim-endwise'
 " Bundle 'vim-scripts/c.vim'
 "----------Ruby-CSS-HTML---------
@@ -86,6 +89,10 @@ let g:Powerline_stl_path_style = 'full'
 "----------AutoCommands----------
 au BufNewFile,BufRead *.plt set ft=gnuplot commentstring=\#\ %s
 au VimEnter * RainbowParenthesesToggleAll
+au Syntax * RainbowParenthesesLoadBraces
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadChevrons
 au BufRead,BufNewFile *.txt set ft=txt commentstring=\!\ %s
 autocmd InsertEnter * :set number
 autocmd InsertLeave * :set relativenumber
@@ -97,6 +104,8 @@ nnoremap <silent> <A-Left> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . tabpagenr()<CR>
 let notabs = 1
 nnoremap <silent> <F8> :let notabs=!notabs<Bar>:if notabs<Bar>:tabo<Bar>:set showtabline=0<Bar>:else<Bar>:tab ball<Bar>:set showtabline=2<Bar>:tabn<Bar>:endif<CR>
+"----------AutoPairs----------
+ let g:AutoPairsFlyMode = 1
 "----------Clang Settings----------
 let g:clang_auto_select=1
 let g:clang_complete_auto=1
@@ -111,6 +120,8 @@ let g:clang_library_path='/usr/local/lib'
 " let g:clang_user_options='2>/dev/null || exit 0'
 let g:clang_snippets=1
 let g:clang_snippets_engine='clang_complete'
+let g:clang_conceal_snippets=1
+set concealcursor=inv conceallevel=2
 let g:clang_trailing_placeholder=1
 "----------UltiSnips----------
 let g:UltiSnipsExpandTrigger="<tab>" 
@@ -185,6 +196,7 @@ let g:syntastic_cpp_check_header = 1
 imap <A-BS> <C-u>
 imap <C-BS> <C-w>
 nnoremap  ; :
+vnoremap  ; :
 nnoremap <F2> :set invpaste paste?<CR>
 nnoremap <F5> :GundoToggle<CR>
 nmap <F9> :TlistToggle<CR>
@@ -192,10 +204,10 @@ let Tlist_Use_Right_Window = 1
 " nmap <F9> :TagbarToggle<CR>
 nnoremap <leader>hs :set hlsearch! hlsearch?<CR>
 nnoremap <Leader>t :NERDTreeMirrorToggle<CR>
-" nnoremap <S-Down> zj
-" nnoremap <S-Left> zc
-" nnoremap <S-Right> zo
-" nnoremap <S-Up> zk
+nnoremap <S-Down> zj
+nnoremap <S-Left> zc
+nnoremap <S-Right> zo
+nnoremap <S-Up> zk
 noremap [1;5k <C-w>>
 noremap [1;5m <C-w><
 noremap <leader>ev :vsplit $MYVIMRC<cr>
@@ -203,6 +215,12 @@ noremap <silent><leader>p :!gnuplot %<CR>
 noremap <silent> ,, :set cul! cuc!<CR>
 nmap \\\ gccj
 vmap \\ gc
+vnoremap < <gv
+vnoremap > >gv
+nnoremap Y y$
+nnoremap / /\v
+vnoremap / /\v
+cnoremap %s %s/\v
 " nmap <Leader>cU :ColorHighlight!<CR>
 
 " Bundle 'ReloadScript'

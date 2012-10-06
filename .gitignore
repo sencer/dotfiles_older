@@ -21,8 +21,6 @@
 .gimp-2.8/
 .gksu.lock
 .gnome2/
-.gnuplot
-.gnuplot-wxt
 .gnuplot_history
 .goutputstream-C1EXKW
 .goutputstream-D6PPKW
@@ -67,4 +65,5 @@ Downloads/
 software/
 windows
 .settings/.history
+.settings/.cache
 .cache
