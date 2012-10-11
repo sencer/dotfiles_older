@@ -5,6 +5,7 @@ call vundle#rc()
 Bundle 'gmarik/vundle'
 "----------Various----------
 " Bundle 'majutsushi/tagbar'
+Bundle  'kshenoy/vim-signature'
 Bundle 'vim-scripts/taglist.vim'
 Bundle 'scrooloose/syntastic'
 Bundle 'vis'
@@ -25,23 +26,25 @@ Bundle 'jonasb/camelcasemotion'
 Bundle 'tpope/vim-eunuch'
 Bundle 'vim-scripts/SearchComplete'
 Bundle 'sencer/vim-qespresso'
+" Bundle 'vim-scripts/mark_tools'
 " Bundle 'hotoo/calendar-vim'
 "----------Visual----------
-Bundle 'bothra90/rainbow_parentheses.vim'
+" Bundle 'bothra90/rainbow_parentheses.vim'
 " Bundle 'kien/rainbow_parentheses.vim'
-" Bundle 'kshenoy/vim-rainbow_parentheses'
+Bundle 'kshenoy/vim-rainbow_parentheses'
 Bundle 'vim-scripts/wombat256.vim'
 " Bundle 'tomasr/molokai'
 Bundle 'Lokaltog/vim-powerline'
 Bundle 'gnuplot.vim'
 Bundle 'CSApprox'
 "----------Completion----------
-Bundle 'oblitum/clang_complete'
-" Bundle 'Rip-Rip/clang_complete'
-Bundle 'vim-scripts/AutoComplPop'
+" Bundle 'oblitum/clang_complete'
+Bundle 'Rip-Rip/clang_complete'
+Bundle 'sencer/AutoComplPop'
 " Bundle 'ervandew/supertab'
 " Bundle 'Shuogo/neocomplcache'
 Bundle 'SirVer/ultisnips'
+Bundle 'sencer/snippets'
 " Bundle 'garbas/vim-snipmate'
 " Bundle 'honza/snipmate-snippets'
 Bundle 'jiangmiao/auto-pairs'
@@ -66,7 +69,8 @@ Bundle 'tpope/vim-endwise'
 filetype indent plugin on
 "----------Appearence----------
 colorscheme wombat256mod
-set ls=2 statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P
+" set ls=2 statusline=%t[%{strlen(&fenc)?&fenc:'none'},%{&ff}]%h%m%r%y%=%c,%l/%L\ %P
+set ls=2
 let g:nerdtree_tabs_open_on_gui_startup=0
 hi Folded ctermfg=LightMagenta ctermbg=Black
 hi Folded term=NONE cterm=NONE gui=NONE
@@ -85,14 +89,15 @@ let g:Powerline_mode_cv=' V⋅B '
 let g:Powerline_mode_s=' S '
 let g:Powerline_mode_S=' S⋅L '
 let g:Powerline_mode_cs=' S⋅B '
-let g:Powerline_stl_path_style = 'full'
+let g:Powerline_stl_path_style = 'short'
+au BufEnter,BufNewFile call Pl#Theme#InsertSegment('currhigroup','after','filetype')
 "----------AutoCommands----------
 au BufNewFile,BufRead *.plt set ft=gnuplot commentstring=\#\ %s
 au VimEnter * RainbowParenthesesToggleAll
 au Syntax * RainbowParenthesesLoadBraces
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadChevrons
+" au Syntax * RainbowParenthesesLoadChevrons
 au BufRead,BufNewFile *.txt set ft=txt commentstring=\!\ %s
 autocmd InsertEnter * :set number
 autocmd InsertLeave * :set relativenumber
@@ -106,11 +111,12 @@ let notabs = 1
 nnoremap <silent> <F8> :let notabs=!notabs<Bar>:if notabs<Bar>:tabo<Bar>:set showtabline=0<Bar>:else<Bar>:tab ball<Bar>:set showtabline=2<Bar>:tabn<Bar>:endif<CR>
 "----------AutoPairs----------
  let g:AutoPairsFlyMode = 1
+ let g:AutoPairsShortcutBackInsert= '<C-b>'
 "----------Clang Settings----------
 let g:clang_auto_select=1
 let g:clang_complete_auto=1
 let g:clang_periodic_quickfix=1
-let g:clang_complete_copen=1
+" let g:clang_complete_copen=1
 let g:clang_close_preview=1
 let g:clang_hl_errors=1
 let g:clang_use_library=1
@@ -121,14 +127,16 @@ let g:clang_library_path='/usr/local/lib'
 let g:clang_snippets=1
 let g:clang_snippets_engine='clang_complete'
 let g:clang_conceal_snippets=1
-set concealcursor=inv conceallevel=2
+set concealcursor=inv conceallevel=3
 let g:clang_trailing_placeholder=1
 "----------UltiSnips----------
+py import sys; sys.path.append("/home/sselcuk/.vim/bundle/snippets/python/")
 let g:UltiSnipsExpandTrigger="<tab>" 
 let g:UltiSnipsJumpForwardTrigger="<tab>" 
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>" 
+let g:UltiSnipsJumpBackwardTrigger="<S-Tab>" 
 let g:UltiSnipsEditSplit='vertical'
-let g:UltiSnipsSnippetsDir="~/.vim/bundle/snippets"
+let g:UltiSnipsSnippetsDir="~/.vim/bundle/snippets/snippets/"
+let g:UltiSnipsSnippetDirectories=["snippets"]
 let g:UltiSnipsListSnippets='<C-L>'
 "----------Syntastic----------
 let g:syntastic_c_check_header = 1
@@ -221,6 +229,8 @@ nnoremap Y y$
 nnoremap / /\v
 vnoremap / /\v
 cnoremap %s %s/\v
+nnoremap <Leader>cc :copen<CR>
+nnoremap <Leader>c :cclose<CR>
 " nmap <Leader>cU :ColorHighlight!<CR>
 
 " Bundle 'ReloadScript'
