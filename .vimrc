@@ -54,10 +54,10 @@ Bundle 'tpope/vim-endwise'
 " Bundle 'vim-scripts/c.vim'
 "----------Ruby-CSS-HTML---------
 " Bundle 'astashov/vim-ruby-debugger'
-" Bundle 'vim-ruby/vim-ruby'
-" Bundle 'ecomba/vim-ruby-refactoring'
+Bundle 'vim-ruby/vim-ruby'
+Bundle 'ecomba/vim-ruby-refactoring'
 " Bundle 'tpope/vim-rails'
-" Bundle 'vim-scripts/VIM-Color-Picker'
+Bundle 'vim-scripts/VIM-Color-Picker'
 " Bundle 'sencer/vim-css-color'
 " Bundle 'mattn/zencoding-vim'
 " Bundle 'rstacruz/sparkup'
@@ -139,8 +139,8 @@ let g:UltiSnipsSnippetsDir="~/.vim/bundle/snippets/snippets/"
 let g:UltiSnipsSnippetDirectories=["snippets"]
 let g:UltiSnipsListSnippets='<C-L>'
 "----------Syntastic----------
-let g:syntastic_c_check_header = 1
-let g:syntastic_cpp_check_header = 1
+" let g:syntastic_c_check_header = 1
+" let g:syntastic_cpp_check_header = 1
 "----------Functions----------
   "----------Calculator----------
   let g:MyCalcPresition = 4
@@ -200,6 +200,24 @@ let g:syntastic_cpp_check_header = 1
     set ft
   endfunction
   nnoremap <leader>f :call SwitchFT()<cr>
+"----------Underline the Word Under Cursor----------
+  let b:underline_cursor_word=0
+  function! Uline()
+    let b:underline_cursor_word=!b:underline_cursor_word
+    if b:underline_cursor_word
+      exe printf('match Underlined /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+      aug uline
+        au CursorMoved * exe printf('match Underlined /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+      aug END
+    else
+      match
+      aug uline
+        au! 
+      aug END
+      aug! uline
+    endif
+  endfunction
+  nnoremap <Leader>[ :call Uline()<CR>
 "----------Mappings----------
 imap <A-BS> <C-u>
 imap <C-BS> <C-w>
@@ -210,7 +228,7 @@ nnoremap <F5> :GundoToggle<CR>
 nmap <F9> :TlistToggle<CR>
 let Tlist_Use_Right_Window = 1
 " nmap <F9> :TagbarToggle<CR>
-nnoremap <leader>hs :set hlsearch! hlsearch?<CR>
+nnoremap <leader>] :set hlsearch! hlsearch?<CR>
 nnoremap <Leader>t :NERDTreeMirrorToggle<CR>
 nnoremap <S-Down> zj
 nnoremap <S-Left> zc
@@ -231,7 +249,7 @@ vnoremap / /\v
 cnoremap %s %s/\v
 nnoremap <Leader>cc :copen<CR>
 nnoremap <Leader>c :cclose<CR>
-" nmap <Leader>cU :ColorHighlight!<CR>
+nmap <Leader>cU :ColorHighlight!<CR>
 
 " Bundle 'ReloadScript'
 " Bundle 'TabLineSet.vim'
@@ -250,4 +268,5 @@ nnoremap <Leader>c :cclose<CR>
 	" let &t_EI = "\<Esc>[3 q"  for some terminals
 " let &t_SI="\<Esc>]12;orange\x7"
 " let &t_EI="\<Esc>]12;red\x7"
+
 " au VimLeave * silent !echo -ne "\033]111\007"
