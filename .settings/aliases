@@ -1,4 +1,5 @@
 # alias '='="noglob ="
+alias ipython='ipython --colors=Linux'
 alias word='/usr/share/playonlinux/playonlinux --run "Microsoft Word 2010"'
 alias clean_word='cd /home/sselcuk/.PlayOnLinux/wineprefix/Office2010/drive_c/users/sselcuk/Application\ Data/Microsoft/Word/STARTUP;rm \~*;cd $OLDPWD'
 alias sudo="nocorrect sudo"
@@ -37,7 +38,7 @@ alias f="tail -f -n 2000"
 alias grp="xargs grep"
 # alias hopper="ssh hopper"
 alias in="find . -name input.txt"
-alias job="find . -name *.job"
+alias job="find . -name \*.job"
 alias la='ls -AF'
 alias ll='ls -lh'
 alias ls='ls --color=auto -NF'
@@ -50,6 +51,6 @@ alias t="out|xargs t|sed 's/output.txt/          /'"
 alias vi="gvim"
 alias vj="v *.job"
 alias vo="v output.txt"
-alias v="vim.gnome -X"
+alias v="vim.gtk -X"
 alias vv="v input.txt"
 alias yedek="rsync -rltDvu --modify-window=1 --progress --delete --files-from='/home/sselcuk/.settings/.rsync' ~ /storage/sencer"

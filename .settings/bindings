@@ -17,3 +17,6 @@ bindkey "\e[3;6~"  kill-line
 bindkey "\e[3;5~"  kill-word
 bindkey "\e[2~"  quoted-insert
 bindkey "\e[Z" reverse-menu-complete # Shift+Ta
+bindkey -s "\ew" "\C-k\C-ahistory 0| grep '\\\s\\\+\C-e\\\s\\\+'\C-m"
+bindkey -s "[1;6D" "pushd -1\C-m"
+bindkey -s "[1;6C" "pushd +0\C-m"
