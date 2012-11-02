@@ -110,7 +110,7 @@ if [[ $plot > 0 ]]; then
   echo -e "  iflag = 3,\n  output_format = 6,\n  fileout = '${filename}.cube',\n/" >>$filename.in
 fi
 
-cat > $filename.job << EOF
+cat > $filename.jb << EOF
 #!/bin/bash
 #PBS -l nodes=1:ppn=1:$node,walltime=00:$time:00
 #PBS -q $queue
@@ -124,17 +124,19 @@ kpools=1
 images=1
 gap=300
 exec_path="\$HOME/software/espresso-4.3.2/bin/"
+echo "\$USER \${PBS_JOBID%%.*} \$(date +%s) started \$(wc -l < \$PBS_NODEFILE)" >> /work/sselcuk/usage.log
 cd \$PBS_O_WORKDIR
 mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}pp.x < $filename.in > $outdir/$filename.out
-rm $filename.in $filename.job 
+rm $filename.in $filename.jb 
+echo "\$USER \${PBS_JOBID%%.*} \$(date +%s) died" >> /work/sselcuk/usage.log
 EOF
 
 if [[ $direction > 0 ]]; then
   echo -e "1\n$filename.dat\n1.0\n1000\n$direction\n2.59" > ${filename}_aver.in
-  cat >> $filename.job << EOF
+  cat >> $filename.jb << EOF
 mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}average.x < ${filename}_aver.in > $filename.average
 rm ${filename}_aver.in
 EOF
 fi
 
-qsub $filename.job
+qsub $filename.jb

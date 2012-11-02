@@ -41,8 +41,10 @@ kpools=1
 images=1
 gap=300
 exec_path="\$HOME/software/espresso-4.3.2/bin/"
+echo "\$USER \${PBS_JOBID%%.*} \$(date +%s) started \$(wc -l < \$PBS_NODEFILE)" >> /work/sselcuk/usage.log
 cd \$PBS_O_WORKDIR
 mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}dos.x < $filename.in > $outdir/$filename.out
+echo "\$USER \${PBS_JOBID%%.*} \$(date +%s) died" >> /work/sselcuk/usage.log
 rm $filename.in $filename.job 
 EOF
 
