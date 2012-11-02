@@ -1,0 +1,28 @@
+$if Bash
+  Space: magic-space
+  set completion-ignore-case on
+  set show-all-if-ambiguous on
+  set expand-tilde on
+  set mark-directories on
+  set mark-symlinked-directories on
+  set match-hidden-files on
+  set skip-completed-text on
+$endif
+# set editing-mode vi
+# set keymap vi
+# set convert-meta on
+
+"\t": menu-complete
+"\e[A":history-search-backward
+"\e[B":history-search-forward
+"\e[2~": quoted-insert
+"\e[3;6~": kill-line
+"\e\C-?": backward-kill-line
+"\e[3;5~": kill-word
+"\C-?": backward-kill-word
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
+"\ew": "\C-k\C-ahistory | grep '^ *[0-9]*.*\C-e.\\?'\C-m\"
+"\eo": "export PS1='\\[\\033[0m\\]\\[\\033[1;33m\\]\\W\\[\\033[0m\\] '\C-m"
+"\eO": "export PS1='\\[\\033[0m\\]\\[\\033[1;33m\\]\\w\\[\\033[0m\\] '\C-m"
+"\C-z": undo
