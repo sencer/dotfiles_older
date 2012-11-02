@@ -67,3 +67,5 @@ windows
 .settings/.history
 .settings/.cache
 .cache
+.settings/.namaz
+.settings/.dirs
