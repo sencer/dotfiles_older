@@ -8,6 +8,7 @@ Bundle 'gmarik/vundle'
 Bundle  'kshenoy/vim-signature'
 Bundle 'vim-scripts/taglist.vim'
 Bundle 'scrooloose/syntastic'
+Bundle 'git://vim-latex.git.sourceforge.net/gitroot/vim-latex/vim-latex'
 Bundle 'vis'
 Bundle 'sjl/gundo.vim'
 Bundle 'Lokaltog/vim-easymotion'
@@ -22,7 +23,7 @@ Bundle 'tpope/vim-unimpaired'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-surround'
 Bundle 'tpope/vim-abolish'
-Bundle 'jonasb/camelcasemotion'
+Bundle 'grncdr/camelcasemotion'
 Bundle 'tpope/vim-eunuch'
 Bundle 'vim-scripts/SearchComplete'
 Bundle 'sencer/vim-qespresso'
@@ -76,7 +77,7 @@ hi Folded ctermfg=LightMagenta ctermbg=Black
 hi Folded term=NONE cterm=NONE gui=NONE
 set backspace=indent,eol,start 
 set smartindent tabstop=2 shiftwidth=2 expandtab rnu pastetoggle=<F2> showmode
-set incsearch hlsearch ignorecase smartcase slm=mouse " ,key km=startsel,stopsel
+set incsearch hlsearch ignorecase smartcase
 syntax on
 nnoremap <F2> :set invpaste paste?<CR>
 "----------Powerline Settings----------
@@ -99,8 +100,12 @@ au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 " au Syntax * RainbowParenthesesLoadChevrons
 au BufRead,BufNewFile *.txt set ft=txt commentstring=\!\ %s
-autocmd InsertEnter * :set number
-autocmd InsertLeave * :set relativenumber
+au InsertEnter * :set number
+au InsertLeave * :set relativenumber
+au FileType python set omnifunc=pythoncomplete#Complete
+au FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+au FileType html set omnifunc=htmlcomplete#CompleteTags
+au FileType css set omnifunc=csscomplete#CompleteCSS
 "----------Tab settings----------
 set swb=useopen,usetab,newtab
 nnoremap <C-Left> :tabprevious<CR>
@@ -110,8 +115,8 @@ nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . tabpagenr()<CR>
 let notabs = 1
 nnoremap <silent> <F8> :let notabs=!notabs<Bar>:if notabs<Bar>:tabo<Bar>:set showtabline=0<Bar>:else<Bar>:tab ball<Bar>:set showtabline=2<Bar>:tabn<Bar>:endif<CR>
 "----------AutoPairs----------
- let g:AutoPairsFlyMode = 1
- let g:AutoPairsShortcutBackInsert= '<C-b>'
+" let g:AutoPairsFlyMode = 1
+" let g:AutoPairsShortcutBackInsert= '<C-b>'
 "----------Clang Settings----------
 let g:clang_auto_select=1
 let g:clang_complete_auto=1
@@ -201,10 +206,10 @@ let g:UltiSnipsListSnippets='<C-L>'
   endfunction
   nnoremap <leader>f :call SwitchFT()<cr>
 "----------Underline the Word Under Cursor----------
-  let b:underline_cursor_word=0
+  let g:underline_cursor_word=0
   function! Uline()
-    let b:underline_cursor_word=!b:underline_cursor_word
-    if b:underline_cursor_word
+    let g:underline_cursor_word=!g:underline_cursor_word
+    if g:underline_cursor_word
       exe printf('match Underlined /\V\<%s\>/', escape(expand('<cword>'), '/\'))
       aug uline
         au CursorMoved * exe printf('match Underlined /\V\<%s\>/', escape(expand('<cword>'), '/\'))
