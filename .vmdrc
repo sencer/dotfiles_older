@@ -1,6 +1,7 @@
+display resize 500 501
+# display reposition 650 10
+menu main move 600 550 
 menu main on
-# menu main move 890 535
-# display reposition 850 760
 # modify display settings
 set viewplist {}
 set fixedlist {}
@@ -17,92 +18,92 @@ set z 0;list
 set mol [molinfo top];list
 set file [open [string trim [lindex [molinfo $mol get filename] 0] "{}"] r];list
 while { [gets $file line] != -1 } { 
-	if {[lindex $line 1] == "Cell" && [lindex $line 2] == "lengths"} { 
-		set a [lindex $line 3] 
-		set b [lindex $line 4]
-		set c [lindex $line 5]
-		break
-		}
+  if {[lindex $line 0] == "CRYST1"} { 
+      set a [lindex $line 1] 
+      set b [lindex $line 2]
+      set c [lindex $line 3]
+      break
+  }
 } 
 pbc set "$a $b $c"
 close $file
 set val [catch {eval {color Labels {Bonds} green}}];list
 after idle {
-	user add key q {exit}	
-	user add key d {mol delrep 6 0}	
-	user add key u {pbc unwrap -all
-	set x 0
-		set y 0
-		set z 0
-		pbc box -shiftcenter "$x $y $z"}	
-	user add key o {pbc box -toggle -shiftcenter "$x $y $z"}	
-	user add key w {pbc wrap -all
-		set x 0
-		set y 0
-		set z 0
-		pbc box -shiftcenter "$x $y $z" }	
-	user add key x {set x [expr $x+0.1]
-		pbc wrap -all -shiftcenter "$x $y $z"
-		pbc box -shiftcenter "$x $y $z" }	
-	user add key y {set y [expr $y-0.1]
-		pbc wrap -all -shiftcenter "$x $y $z"
-		pbc box -shiftcenter "$x $y $z"}	
-	user add key z {set z [expr $z-0.1]
-		pbc wrap -all -shiftcenter "$x $y $z"
-		pbc box -shiftcenter "$x $y $z" }
-	foreach mid [molinfo list] {
-		mol delrep 0 $mid
-		mol representation VDW 0.300000 18.000000
-		mol color Name
-		mol selection {name Ti O F H}
-		mol addrep $mid
-		mol representation DynamicBonds 2.100000 0.100000 16.000000
-		mol color Name
-		mol selection {name Ti O F}
-		mol addrep $mid
-		mol representation DynamicBonds 2.250000 0.100000 16.000000
-		mol color Name
-		mol selection {name Ti O F and z<9}
-		mol addrep $mid
-		mol representation DynamicBonds 1.100000 0.100000 16.000000
-		mol color Name
-		mol selection {name H O F}
-		mol addrep $mid
-		mol representation HBonds 4.000000 20.000000 1.000000
-		mol color Name
-		mol selection {name H O F}
-		mol addrep $mid
-		mol representation Isosurface -0.020400 0 0 0 1 1
-		mol selection {user > 0}
-		mol color colorID 11
-		mol addrep $mid
-		mol representation Isosurface 0.020400 0 0 0 1 1
-		mol selection {user > 0}
-		mol color colorID 4
-		mol addrep $mid
-		}
-	
-	set colorcmds {
-    	{color Display {Background} white}
-    	{color Name {T} silver}
-    	{color Labels {Bonds} blue}
-	}
-	foreach colcmd $colorcmds {
-   		set val [catch {eval $colcmd}]
-  	}
-  	
-set viewpoints([molinfo top]) {{{1 0 0 -5.014} {0 1 0 -8.387} {0 0 1 -3.543} {0 0 0 1}} {{0.00444663 -0.999985 -0.00239414 0} {-0.000514166 -0.00239561 0.999996 0} {-0.999991 -0.00444665 -0.000524823 0} {0 0 0 1}} {{0.0251585 0 0 0} {0 0.0251585 0 0} {0 0 0.0251585 0} {0 0 0 1}} {{1 0 0 -0.016534} {0 1 0 -0.131387} {0 0 1 0.865309} {0 0 0 1}}}
-lappend viewplist [molinfo top]
-set topmol [molinfo top]
+  user add key q {exit}	
+  user add key d {mol delrep 6 0}	
+  user add key u {pbc unwrap -all
+    set x 0
+      set y 0
+      set z 0
+      pbc box -shiftcenter "$x $y $z"}	
+  user add key o {pbc box -toggle -shiftcenter "$x $y $z"}	
+  user add key w {pbc wrap -all
+    set x 0
+      set y 0
+      set z 0
+      pbc box -shiftcenter "$x $y $z" }	
+  user add key x {set x [expr $x+0.1]
+    pbc wrap -all -shiftcenter "$x $y $z"
+      pbc box -shiftcenter "$x $y $z" }	
+  user add key y {set y [expr $y-0.1]
+    pbc wrap -all -shiftcenter "$x $y $z"
+      pbc box -shiftcenter "$x $y $z"}	
+  user add key z {set z [expr $z-0.1]
+    pbc wrap -all -shiftcenter "$x $y $z"
+      pbc box -shiftcenter "$x $y $z" }
+  foreach mid [molinfo list] {
+    mol delrep 0 $mid
+      mol representation VDW 0.300000 18.000000
+      mol color Name
+      mol selection {name Ti O F H}
+    mol addrep $mid
+      mol representation DynamicBonds 2.100000 0.100000 16.000000
+      mol color Name
+      mol selection {name Ti O F}
+    mol addrep $mid
+      mol representation DynamicBonds 2.250000 0.100000 16.000000
+      mol color Name
+      mol selection {name Ti O F and z<9}
+    mol addrep $mid
+      mol representation DynamicBonds 1.100000 0.100000 16.000000
+      mol color Name
+      mol selection {name H O F}
+    mol addrep $mid
+    #   mol representation HBonds 4.000000 20.000000 1.000000
+    #   mol color Name
+    #   mol selection {name H O F}
+    # mol addrep $mid
+    #   mol representation Isosurface -0.020400 0 0 0 1 1
+    #   mol selection {user > 0}
+    # mol color colorID 11
+    #   mol addrep $mid
+    #   mol representation Isosurface 0.020400 0 0 0 1 1
+    #   mol selection {user > 0}
+    # mol color colorID 4
+    #   mol addrep $mid
+  }
 
-foreach v $viewplist {
-  if [expr $v != -1] {
-	molinfo $v set {center_matrix rotate_matrix scale_matrix global_matrix} $viewpoints($v)}
-}
-foreach v $fixedlist {
-  molinfo $v set fixed 1
-}
-user add key v {render POV3 pov3image {/usr/local/bin/povray +W%w +H%h -I%s -O%s.png +D +X +A}}
-render options POV3 {/usr/local/bin/povray +W%w +H%h -I%s -O%s.png +D +X +A}
-render options Raster3D {/usr/bin/render <%s -invert -tiff %s.jpg }
+  set colorcmds {
+    {color Display {Background} white}
+    {color Name {T} silver}
+    {color Labels {Bonds} blue}
+  }
+  foreach colcmd $colorcmds {
+    set val [catch {eval $colcmd}]
+  }
+
+  set viewpoints([molinfo top]) {{{1 0 0 -5.014} {0 1 0 -8.387} {0 0 1 -3.543} {0 0 0 1}} {{0.00444663 -0.999985 -0.00239414 0} {-0.000514166 -0.00239561 0.999996 0} {-0.999991 -0.00444665 -0.000524823 0} {0 0 0 1}} {{0.027825 0 0 0} {0 0.027825 0 0} {0 0 0.027825 0} {0 0 0 1}} {{1 0 0 -0.046534} {0 1 0 -0.121387} {0 0 1 0.865309} {0 0 0 1}}}
+  lappend viewplist [molinfo top]
+    set topmol [molinfo top]
+
+    foreach v $viewplist {
+      if [expr $v != -1] {
+        molinfo $v set {center_matrix rotate_matrix scale_matrix global_matrix} $viewpoints($v)}
+    }
+  foreach v $fixedlist {
+    molinfo $v set fixed 1
+  }
+  user add key v {render POV3 pov3image {/usr/local/bin/povray +W%w +H%h -I%s -O%s.png +D +X +A}}
+  render options POV3 {/usr/local/bin/povray +W%w +H%h -I%s -O%s.png +D +X +A}
+  render options Raster3D {/usr/bin/render <%s -invert -tiff %s.jpg }
 }

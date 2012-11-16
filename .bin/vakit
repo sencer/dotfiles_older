@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+require 'namaz'
+
+a = Namaz()
+if !(a.oku('/home/sselcuk/.settings/.namaz')) and !(a.baglan('abd','princeton'))
+  puts "export NAMAZ=-1" 
+  exit
+end
+
+if ARGV[0].nil?
+  i, j = a.index
+  puts "export NAMAZ=#{a[i][j].strftime('%s').to_i/60+300}"
+elsif ARGV[0].to_i > 0 
+  a.to_s(ARGV[0])
+elsif ARGV[0]=="al"
+  if a.baglan('abd', 'princeton')
+    a.yaz
+  end
+else
+  a.to_s
+end
