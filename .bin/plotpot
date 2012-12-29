@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+file="totV1.average"
+if [[ $# > 0 ]]; then
+  file=$1
+  shift
+fi
+fermi=`tac output.txt|grep -m1 Fermi|awk '{print $5}'`
+if [[ $# == 1 ]]; then
+  fermi=$1
+  shift
+fi
+
+# echo -n "Press Enter when you are done"
+cat << EOF | gnuplot 
+  set terminal pngcairo enhanced dashed
+  set output "potential.png"
+  set key top center
+  set arrow nohead from graph 0, first 0 to graph 1, first 0 ls 3
+  set label "Fermi Energy" at graph 0.02, first 0.9
+  plot [0:25] [-20:20] "$file" u (\$1*.52918):(13.6057*\$2-$fermi) w l t "Planar Average",\
+            "" u (\$1*.52918):(13.6057*\$3) w l t "Microscopic Average"
+EOF
+# tput cuu1 && tput el

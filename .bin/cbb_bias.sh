@@ -33,7 +33,7 @@ fi
 fermi=$(grep -a "the Fermi energy is" output.txt | tail -n 1 | awk '{print $5}')
 
 #get the parameters for the last band energy block
-start_line=$(grep -a -n "End of self-consistent calculation" output.txt | tail -n 1 | awk 'BEGIN{FS=":"}{print $1}')
+start_line=$(grep --color=NEVER -a -n "End of self-consistent calculation" output.txt | tail -n 1 | awk 'BEGIN{FS=":"}{print $1}')
 total_line=$(wc -l output.txt | awk '{print $1}')
 num_lines=$(echo "$total_line - $start_line + 1" | bc)
 

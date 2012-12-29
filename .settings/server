@@ -33,7 +33,7 @@ della(){
     (fusermount -z -u ~/tigress && \rm -r ~/tigress)||echo "Error"
   else
     mkdir ~/tigress
-    sshfs tigress:tigress/phd ~/tigress -o transform_symlinks -o follow_symlinks -o workaround=rename
+    sshfs tigress:tigress ~/tigress -o transform_symlinks -o follow_symlinks -o workaround=rename
     ls
   fi 
 }

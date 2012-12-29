@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+outfile="output.txt"
+dos="dos.dat"
+if [[ $# == 1 ]]; then
+  dos=$1
+fi
+grep -q "SPIN UP" $outfile && spin=true
+arrow=35
+fermi=$(tac $outfile|grep -m1 Fermi|tr -s ' '|cut -d ' ' -f6)
+
+# echo -n "Press Enter when you are done"
+if [[ $spin ]]; then
+  cat << EOF 
+    set terminal pngcairo enhanced dashed
+    set output "dos.png"
+    set key at 3, 58 
+    set label 'E_f=$(printf "%.2f" $fermi) eV' at $fermi, $arrow+5 font ',12' center # rotate by 90
+    set arrow nohead from $fermi, -$arrow to $fermi, $arrow ls 3 lw 1.0
+    plot [-4.5:5.5] [-60:60] '$dos' u 1:2 w l t 'Up Spin',\
+      '' u 1:(-1*\$3) w l t 'Down Spin' 
+EOF
+else
+  cat << EOF | gnuplot
+    set terminal pngcairo enhanced dashed
+    set output "dos.png"
+    set label 'Fermi Level' at $fermi, $arrow+2 font ',10' left rotate by 90
+    set arrow nohead from $fermi, -5 to $fermi, $arrow ls 3 lw 1.0
+    plot '$dos' u 1:2 w l notitle
+EOF
+fi
+# tput cuu1 && tput el

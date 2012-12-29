@@ -1,8 +1,12 @@
 #!/usr/bin/env ruby
-require 'namaz'
+require 'diyanet'
 
-a = Namaz()
-if !(a.oku('/home/sselcuk/.settings/.namaz')) and !(a.baglan('abd','princeton'))
+a = Diyanet.Namaz()
+
+if a.oku('/home/sselcuk/.settings/.namaz')
+elsif a.baglan("ABD", "PRINCETON")
+  a.yaz
+else
   puts "export NAMAZ=-1" 
   exit
 end
@@ -12,10 +16,6 @@ if ARGV[0].nil?
   puts "export NAMAZ=#{a[i][j].strftime('%s').to_i/60+300}"
 elsif ARGV[0].to_i > 0 
   a.to_s(ARGV[0])
-elsif ARGV[0]=="al"
-  if a.baglan('abd', 'princeton')
-    a.yaz
-  end
 else
   a.to_s
 end

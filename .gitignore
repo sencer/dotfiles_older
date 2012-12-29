@@ -89,3 +89,10 @@ windows
 .xsession-errors
 .xsession-errors.old
 .zcompdump
+.settings/.dirs
+.settings/.namaz
+.matplotlib/
+.purple/
+.rdebug_hist
+images/
+pw/

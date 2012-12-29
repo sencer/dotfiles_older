@@ -8,7 +8,7 @@ Bundle 'gmarik/vundle'
 Bundle  'kshenoy/vim-signature'
 Bundle 'vim-scripts/taglist.vim'
 Bundle 'scrooloose/syntastic'
-Bundle 'git://vim-latex.git.sourceforge.net/gitroot/vim-latex/vim-latex'
+"Bundle 'git://vim-latex.git.sourceforge.net/gitroot/vim-latex/vim-latex'
 Bundle 'vis'
 Bundle 'sjl/gundo.vim'
 Bundle 'Lokaltog/vim-easymotion'
@@ -18,7 +18,7 @@ Bundle 'scrooloose/nerdtree'
 Bundle 'jistr/vim-nerdtree-tabs'
 Bundle 'kien/ctrlp.vim'
 Bundle 'tomtom/tcomment_vim'
-Bundle 'vim-scripts/cr-bs-del-space-tab.vim'
+Bundle 'sencer/normal.vim'
 Bundle 'tpope/vim-unimpaired'
 Bundle 'tpope/vim-repeat'
 Bundle 'tpope/vim-surround'
@@ -108,6 +108,9 @@ au FileType python set omnifunc=pythoncomplete#Complete
 au FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 au FileType html set omnifunc=htmlcomplete#CompleteTags
 au FileType css set omnifunc=csscomplete#CompleteCSS
+autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+ autocmd FileType ruby,eruby set omnifunc=rubycomplete#Complete
 "----------Tab settings----------
 set swb=useopen,usetab,newtab
 nnoremap <C-Left> :tabprevious<CR>

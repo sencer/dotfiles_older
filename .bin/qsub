@@ -5,7 +5,7 @@ else
   jobs="$@"
 fi
 if [[ "$PWD" == *tigress* ]];then
-  ssh -q della "cd ${PWD/tigress/tigress\/phd}; qsub $jobs"
+  ssh -q della "cd ${PWD}; qsub $jobs"
 elif [[ "$PWD" == *bnl* ]];then
   ssh -q -p6166 localhost "cd ${PWD/home\/sselcuk\/bnl/home3\/sselcuk}; qsub $jobs"
 elif [[ "$PWD" == *hopper* ]];then

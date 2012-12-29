@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 filename='projwfc'
-outdir='./'
+outdir='../'
 queue="cfn_short"
 node="gen03"
 time=25
@@ -25,7 +25,7 @@ while [[ $# > 0 ]]; do
   fi
 done
 
-echo -e "&INPUTPP\noutdir = '$outdir'\n  DeltaE= 0.01, \n filpdos='pdos_'\nfilproj='proj_'\n/" > $filename.in
+echo -e "&INPUTPP\noutdir = '$outdir'\n  DeltaE= 0.01, \n filpdos='dos'\nfilproj='proj'\n/" > $filename.in
 
 cat > $filename.job << EOF
 #!/bin/bash
@@ -41,11 +41,9 @@ kpools=1
 images=1
 gap=300
 exec_path="\$HOME/software/espresso-4.3.2/bin/"
-echo "\$USER \${PBS_JOBID%%.*} \$(date +%s) started \$(wc -l < \$PBS_NODEFILE)" >> /work/sselcuk/usage.log
 cd \$PBS_O_WORKDIR
 mpirun_rsh -ssh -hostfile \$PBS_NODEFILE -np 1 \${exec_path}projwfc.x < $filename.in > $outdir/$filename.out
-rm $filename.in $filename.job 
-echo "\$USER \${PBS_JOBID%%.*} \$(date +%s) died" >> /work/sselcuk/usage.log
+# rm $filename.in $filename.job 
 EOF
 
 qsub $filename.job

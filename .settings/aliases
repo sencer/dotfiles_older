@@ -1,57 +1,51 @@
-# alias '='="noglob ="
 alias ipython='ipython --colors=Linux'
 alias word='/usr/share/playonlinux/playonlinux --run "Microsoft Word 2010"'
 alias clean_word='cd /home/sselcuk/.PlayOnLinux/wineprefix/Office2010/drive_c/users/sselcuk/Application\ Data/Microsoft/Word/STARTUP;rm \~*;cd $OLDPWD'
-alias sudo="nocorrect sudo"
-# alias vesta="wine /home/sselcuk/software/vesta/VESTA.exe"
 alias vesta="/usr/share/playonlinux/playonlinux --run 'Vesta'"
 alias gdis="/home/sselcuk/software/gdis/gdis"
 alias gnuplot="rlwrap -a -c -i gnuplot"
 alias irb="rlwrap -a -c -i irb"
+alias pry="rlwrap -a -c -i pry"
+alias rm='trash-put'
 alias plot="\gnuplot -p"
-alias slab="awk 'BEGIN{min=0}{if(NF==3 && \$2<0.001){if(min == 0)min=\$1; else max=\$1}}END{print (max-min)*0.5292}' chden.average"
 alias xi="xcrysden --pwi input.txt"
 alias xo="xcrysden --pwo output.txt"
-alias load_rvm="export PATH=::~/.bin:$PATH:$HOME/.rvm/bin;source $HOME/.rvm/scripts/rvm;gitp"
-alias tunnel="kill -9 \${\$(_ netstat -atnp 2>/dev/null|grep '::1:2318'|tr -s ' '|cut -d ' ' -f 7)/\/*/}"
-alias -g aliases="~/.settings/aliases"
-alias less="less -R"
-alias arm='\rm input_tmp.in *.job.* cp_* cp.* output.txt CRASH *.pdb *.cube pw* -r 2>/dev/null;ls'
-alias rm='trash-put'
-alias -g zshrc="~/.zshrc"
-alias -g vimrc="~/.vimrc"
-alias bc='bc -lq'
-alias b="find . -name output.txt -exec sh -c \"printf '%-50s' {};tac {}|grep -i -m1 -e 'number of bfgs' -e 'bfgs converged';printf '\n' \" \\;|sed 's/\/output.txt//;s/.\///;/^\$/d'"
-alias "_"="sudo"
-# alias ..='cd ..'
+alias tunnel="kill -9 \${\$(sudo netstat -atnp 2>/dev/null|grep '::1:2318'|tr -s ' '|cut -d ' ' -f 7)/\/*/}"
+
+alias "?"='cd $OLDPWD'
 alias -g "..."='../..'
 alias -g "...."='../../..'
 alias -g "....."='../../../..'
 alias -g "......"='../../../../..'
-alias "?"='change_dir'
-# alias "?"='cd $OLDPWD'
+alias -g zshrc="~/.zshrc"
+alias -g vimrc="~/.vimrc"
+alias -g aliases="~/.settings/aliases"
+
+alias arm='\rm input_tmp.in *.job.* cp_* cp.* output.txt CRASH *.pdb *.cube pw* -r 2>/dev/null;ls'
+alias b="find . -name output.txt -exec sh -c \"printf '%-50s' {};tac {}|grep -i -m1 -e 'number of bfgs' -e 'bfgs converged';printf '\n' \" \\;|sed 's/\/output.txt//;s/.\///;/^\$/d'"
 alias c="grep -i 'Begin final coordinates' -A \$(grep nat input.txt | awk '{printf \$3+2}' | sed 's/,//') output.txt"
 alias cln='find . -name \*.pdb -or -name input_tmp.in -or -name \*.job.\* -or -name trajs -or -name pdbs -or -name stats.txt|xargs rm -r;ls'
-alias cp='nocorrect cp -ivdRp'
-# alias della='ssh della' 
 alias e="out|xargs awk 'BEGIN {l=1} /Final energy/ {if(l % 2 == 0){printf \"\\033[38;5;111m\"} l=l+1; printf \"%-50s %18f\\033[0m\\n\", FILENAME, \$4*13.606}' | sed 's/\/output.txt//;s/.\///' "
 alias f="tail -f -n 2000"
 alias grp="xargs grep"
-# alias hopper="ssh hopper"
-alias in="find . -name input.txt"
-alias job="find . -name \*.job"
+
 alias la='ls -AF'
 alias ll='ls -lh'
 alias ls='ls --color=auto -NF'
-alias mkdir='nocorrect mkdir -p'
+alias cp='nocorrect cp -ivdRp'
+alias bc='bc -lq'
 alias mv='nocorrect mv -iv'
-alias n="nano"
+alias sudo="nocorrect sudo"
+alias less="less -R"
+alias mkdir='nocorrect mkdir -p'
+
+alias in="find . -name input.txt"
+alias job="find . -name \*.job"
 alias out="find . -name output.txt"
-# alias tigress='mkdir ~/tigress;sshfs tigress:tigress/phd ~/tigress -o transform_symlinks -o follow_symlinks -o workaround=rename' 
+
 alias t="out|xargs t|sed 's/output.txt/          /'"
-alias vi="gvim"
+alias v="gvim"
 alias vj="v *.job"
 alias vo="v output.txt"
-alias v="vim.gtk -X"
+alias vi="vim.gtk -X"
 alias vv="v input.txt"
-alias yedek="rsync -rltDvu --modify-window=1 --progress --delete --files-from='/home/sselcuk/.settings/.rsync' ~ /storage/sencer"

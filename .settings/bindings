@@ -15,6 +15,7 @@ bindkey "\e[A" history-beginning-search-backward
 bindkey "\e[B" history-beginning-search-forward
 bindkey "\e[3;6~"  kill-line
 bindkey "\e[3;5~"  kill-word
+bindkey "\C-X" kill-region
 bindkey "\e[2~"  quoted-insert
 bindkey "\e[Z" reverse-menu-complete # Shift+Ta
 bindkey -s "\ew" "\C-k\C-ahistory 0| grep '\\\s\\\+\C-e\\\s\\\+'\C-m"

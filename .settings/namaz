@@ -1,12 +1,9 @@
-if [[ `wc -l /home/sselcuk/.settings/.namaz` < 3 ]];then
-  /home/sselcuk/.bin/vakit al
-fi
 eval `/home/sselcuk/.bin/vakit`
 
 kalan_vakit(){
-  [[ $NAMAZ < 0 ]] && exit
+  [[ $NAMAZ -lt 0 ]] && exit
   t=$[`date +%s`/60]
-  if [ $NAMAZ -lt $t ]; then
+  if [[ $NAMAZ -lt $t ]]; then
     eval `/home/sselcuk/.bin/vakit`
   fi
   kalan=$[NAMAZ-t]
