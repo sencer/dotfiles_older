@@ -4,6 +4,7 @@ menu graphics move 929 115
 display resize 470 500
 display reposition 450 930
 display projection orthographic
+display nearclip set 0
 display depthcue off
 axes location off
 
@@ -13,17 +14,19 @@ set mol [molinfo top];\
 set tmp [split [molinfo $mol get filename] /];\
 set len [llength $tmp]-1;\
 set fname [lindex $tmp $len];\
-cd [join [lreplace $tmp $len $len] /];\
+set tmp [join [lreplace $tmp $len $len] /];\
+if { [string length $tmp] > 0 } { cd $tmp }
 unset len mol
-
-color Display Background white
-color Name {T} silver
-color Element Ti white
-color Element O pink
 
 render options POV3 {povray +W%w +H%h -I%s -O%s.png +D +X +A +UA +FN}
 user add key v { render POV3 [string trim $fname pdb]pov [render options POV3] }
+after idle {
+  color Display Background white
+  color Name {T} silver
+  color Element Ti white
+  color Element O pink
 #load my scripts in this order!
-cell
-state
+  cell
+  state
+}
 user add key q { exit }
